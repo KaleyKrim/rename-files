@@ -6,14 +6,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	// "path/filepath"
-	// "regexp"
-	// "os/exec"
 )
-
-func readDir(dirname string) {
-
-}
 
 func getMatchedFiles(files []os.FileInfo, stringToMatch string) []os.FileInfo {
 	var matchedFiles []os.FileInfo
@@ -42,7 +35,6 @@ func getOldToNew(old string, new string) oldToNew {
 	return oldToNew{"./" + old, "./" + new}
 }
 
-// rename (match pattern) prefix/suffix (newinput)
 func main() {
 	args := os.Args[1:]
 
@@ -91,6 +83,7 @@ func main() {
 
 	for _, path := range pathsToRename {
 		os.Rename(path.Old, path.New)
+		fmt.Println("renamed " + path.Old + " to " + path.New)
 	}
 
 }
