@@ -66,12 +66,26 @@ func main() {
 		}
 	case "suffix":
 		for _, file := range matchedFiles {
-			pathsToRename = append(pathsToRename, getOldToNew(file.Name(), file.Name()+"-"+args[2]))
+			extensionIndex := strings.Index(file.Name(), ".")
+			fileName := file.Name()
+			extension := ""
+			if extensionIndex > -1 {
+				extension = fileName[extensionIndex:len(fileName)]
+				fileName = fileName[0:extensionIndex]
+			}
+			pathsToRename = append(pathsToRename, getOldToNew(fileName+extension, fileName+"-"+args[2]+extension))
 		}
 	default:
 		for i, file := range matchedFiles {
 			fileNum := strconv.Itoa(i + 1)
-			pathsToRename = append(pathsToRename, getOldToNew(file.Name(), args[1]+"-"+fileNum))
+			extensionIndex := strings.Index(file.Name(), ".")
+			fileName := file.Name()
+			extension := ""
+			if extensionIndex > -1 {
+				extension = fileName[extensionIndex:len(fileName)]
+				fileName = fileName[0:extensionIndex]
+			}
+			pathsToRename = append(pathsToRename, getOldToNew(fileName+extension, args[1]+"-"+fileNum+extension))
 		}
 	}
 
