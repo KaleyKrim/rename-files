@@ -35,6 +35,17 @@ func getOldToNew(old string, new string) oldToNew {
 	return oldToNew{"./" + old, "./" + new}
 }
 
+func parseFilenameAndExtension(name string) (string, string) {
+	extensionIndex := strings.Index(name, ".")
+	fileName := name
+	extension := ""
+	if extensionIndex > -1 {
+		extension = fileName[extensionIndex:len(fileName)]
+		fileName = fileName[0:extensionIndex]
+	}
+	return fileName, extension
+}
+
 func main() {
 	args := os.Args[1:]
 
@@ -58,25 +69,13 @@ func main() {
 		}
 	case "suffix":
 		for _, file := range matchedFiles {
-			extensionIndex := strings.Index(file.Name(), ".")
-			fileName := file.Name()
-			extension := ""
-			if extensionIndex > -1 {
-				extension = fileName[extensionIndex:len(fileName)]
-				fileName = fileName[0:extensionIndex]
-			}
+			fileName, extension := parseFilenameAndExtension(file.Name())
 			pathsToRename = append(pathsToRename, getOldToNew(fileName+extension, fileName+"-"+args[2]+extension))
 		}
 	default:
 		for i, file := range matchedFiles {
 			fileNum := strconv.Itoa(i + 1)
-			extensionIndex := strings.Index(file.Name(), ".")
-			fileName := file.Name()
-			extension := ""
-			if extensionIndex > -1 {
-				extension = fileName[extensionIndex:len(fileName)]
-				fileName = fileName[0:extensionIndex]
-			}
+			fileName, extension := parseFilenameAndExtension(file.Name())
 			pathsToRename = append(pathsToRename, getOldToNew(fileName+extension, args[1]+"-"+fileNum+extension))
 		}
 	}
