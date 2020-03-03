@@ -13,6 +13,20 @@ func readDir(dirname string) {
 
 }
 
+func getMatchedFiles(files io.FileInfo, stringToMatch string) []os.FileInfo {
+	var matchedFiles []os.FileInfo
+	for _, file := range files {
+		matched, err := regexp.MatchString(strings.ToLower(file.Name), strings.ToLower(stringToMatch))
+		if (err != nil) {
+			continue
+		}
+
+		matchedFiles = append(matchedFiles, file)
+	}
+
+	return matchedFiles
+}
+
 // rename (match pattern) prefix/suffix (newinput)
 func main() {
 	args := os.Args[1:]
@@ -23,15 +37,7 @@ func main() {
 		return
 	}
 
-	var matchedFiles []os.FileInfo
-	for _, file := range files {
-		matched, err := regexp.MatchString(strings.ToLower(file.Name), strings.ToLower(args[0]))
-		if (err != nil) {
-			continue
-		}
-
-		matchedFiles = append(matchedFiles, file)
-	}
+	matchedFiles := getMatchedFiles(files, args[0])
 
 	switch strings.ToLower(args[1]) {
 	case "prefix":
