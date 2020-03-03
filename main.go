@@ -1,9 +1,10 @@
 package main
 
 import (
+	"fmt"
+	"io/ioutil"
 	"os"
 	"strings"
-	"io/ioutil"
 	// "path/filepath"
 	// "regexp"
 	// "os/exec"
@@ -13,18 +14,31 @@ func readDir(dirname string) {
 
 }
 
-func getMatchedFiles(files io.FileInfo, stringToMatch string) []os.FileInfo {
+func getMatchedFiles(files []os.FileInfo, stringToMatch string) []os.FileInfo {
 	var matchedFiles []os.FileInfo
 	for _, file := range files {
-		matched, err := regexp.MatchString(strings.ToLower(file.Name), strings.ToLower(stringToMatch))
-		if (err != nil) {
+		containsTarget := strings.Contains(strings.ToLower(file.Name()), strings.ToLower(stringToMatch))
+		if containsTarget == false {
 			continue
 		}
 
 		matchedFiles = append(matchedFiles, file)
 	}
 
+	if len(matchedFiles) == 0 {
+		return nil
+	}
+
 	return matchedFiles
+}
+
+type oldToNew struct {
+	Old string
+	New string
+}
+
+func getOldToNew(old string, new string) oldToNew {
+	return oldToNew{"./" + old, "./" + new}
 }
 
 // rename (match pattern) prefix/suffix (newinput)
@@ -32,26 +46,31 @@ func main() {
 	args := os.Args[1:]
 
 	files, err := ioutil.ReadDir(".")
-	if (err != nil) {
+	if err != nil {
 		fmt.Println("couldn't read current directory")
 		return
 	}
 
 	matchedFiles := getMatchedFiles(files, args[0])
+	if matchedFiles == nil {
+		fmt.Println("no matching files to rename")
+		return
+	}
 
+	var pathsToRename []oldToNew
 	switch strings.ToLower(args[1]) {
 	case "prefix":
-		// add args[2] to start of each
-	case "suffix";
-		// add args[2] to end of each
+		for _, file := range matchedFiles {
+			pathsToRename = append(pathsToRename, getOldToNew(file.Name(), args[2]+"-"+file.Name()))
+		}
+	case "suffix":
+		for _, file := range matchedFiles {
+			pathsToRename = append(pathsToRename, getOldToNew(file.Name(), file.Name()+"-"+args[2]))
+		}
 	default:
-		// get amount of matching files
-		// name them all with args[1] and 
-		// classic rename with numbers
-
+		for i, file := range matchedFiles {
+			fileNum := string(i + 1)
+			pathsToRename = append(pathsToRename, getOldToNew(file.Name(), args[1]+"-"+fileNum))
+		}
 	}
 }
-
-// rename all with new name, numbered 1~length
-// rename all with new prefix
-// rename all with new suffix
