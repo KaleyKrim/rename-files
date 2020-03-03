@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strconv"
 	"strings"
 	// "path/filepath"
 	// "regexp"
@@ -69,7 +70,7 @@ func main() {
 		}
 	default:
 		for i, file := range matchedFiles {
-			fileNum := string(i + 1)
+			fileNum := strconv.Itoa(i + 1)
 			pathsToRename = append(pathsToRename, getOldToNew(file.Name(), args[1]+"-"+fileNum))
 		}
 	}
