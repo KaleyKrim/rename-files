@@ -73,4 +73,9 @@ func main() {
 			pathsToRename = append(pathsToRename, getOldToNew(file.Name(), args[1]+"-"+fileNum))
 		}
 	}
+
+	for _, path := range pathsToRename {
+		os.Rename(path.Old, path.New)
+	}
+
 }
